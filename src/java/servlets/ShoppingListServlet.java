@@ -10,14 +10,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
  * @author 672762
  */
 public class ShoppingListServlet extends HttpServlet {
-
-    
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -31,10 +30,10 @@ public class ShoppingListServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        
+
+        getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
         doEverything(request, response);
-        
+
     }
 
     /**
@@ -52,40 +51,52 @@ public class ShoppingListServlet extends HttpServlet {
     }
 
     private void doEverything(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
-        
-        
-        String user = request.getParameter("user");
-        String item = request.getParameter("item");
-        String action = request.getParameter("action");
-        
-        //HttpSession session = request.getSession();
-        //session = setAttribute(user);
 
+        String action = null;
+        HttpSession session = request.getSession();
         
-        if (user != null && !user.isEmpty()) {
+        
+        //String user = (String) session.getAttribute("user");
+        //String user = request.getParameter("user");
+        String item = request.getParameter("item");
+        //String action = request.getParameter("action");
+
+        if (session.getAttribute("user") == null && action == null) {
+            getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+            return;
             
-            request.setAttribute("welcomeMessage", "Welcome " + user + "! " + "<a href='shoppinglist?register'>Log out</a>");
-            
+        } else if (session.getAttribute("user") != null) {
+
+            request.setAttribute("user", session.getAttribute("user"));
+            //request.setAttribute("welcomeMessage", "Welcome " + user + "! " + "<a href='shoppinglist?register'>Log out</a>");
             getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
-            
-            if (action.equals("add")){ 
-                String[] list = null;
-                request.setAttribute("showItem", item);
-            } 
         }
         
+        if(action.equals("register")) {
+            
+            String user = request.getParameter("user");
+            session.setAttribute("user", user);
+            response.sendRedirect("ShoppingList");
+            
+        } else if (action.equals("logout")) {
 
-//        else if (action.equals("delete")){ 
+            session.invalidate();
+            request.setAttribute("message", "Successfully logged out.");
+            getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+            return;
+        }
+
+        if(action != null) {
+            
+        }
+//            if (action.equals("add")){ 
+//               
+//                request.setAttribute("showItem", "<input type='radio'>" + item);
+//            } 
+//          else if (action.equals("delete")){ 
 //            // to do rest of code..
 //        } 
-//        else if (action.equals("logout")){ 
-//            // to do rest of code..
-//        } 
-        
-        getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+        getServletContext().getRequestDispatcher("/WEB-INF/shoppinglist.jsp").forward(request, response);
     }
 
 }
-
-    
