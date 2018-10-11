@@ -28,11 +28,11 @@
         </form>
         
         
-        <c:forEach var="item" items="${item}">
+        <c:forEach var="item" items="${itemList}" varStatus="status">
             <form action="shoppinglist?action=delete">
                 <ul>
-                    <li>${showItem}</li>
+                    <li><input type="radio" name="item"></li>
                 </ul>
-               <input type="submit" value="Delete">
+               <input type="submit" value="Delete" name="action">
             </form>
         </c:forEach>
